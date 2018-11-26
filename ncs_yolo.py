@@ -8,6 +8,8 @@ import sys
 import numpy as np
 import cv2
 import time
+from imutils.video import VideoStream
+from imutils.video import FPS
 
 # Assume running in examples/caffe/TinyYolo and graph file is in current directory.
 input_image_file= '../../data/images/nps_chair.png'
@@ -237,24 +239,16 @@ def display_objects_in_gui(source_image, filtered_objects):
         cv2.rectangle(display_image,(box_left, box_top-20),(box_right,box_top), label_background_color, -1)
         cv2.putText(display_image,filtered_objects[obj_index][0] + ' : %.2f' % filtered_objects[obj_index][5], (box_left+5,box_top-7), cv2.FONT_HERSHEY_SIMPLEX, 0.5, label_text_color, 1)
 
-    window_name = 'TinyYolo (hit key to exit)'
+    window_name = 'Output'
     cv2.imshow(window_name, display_image)
-
-    while (True):
-        raw_key = cv2.waitKey(1)
-        
-        # check if the window is visible, this means the user hasn't closed
-        # the window via the X button
-        prop_val = cv2.getWindowProperty(window_name, cv2.WND_PROP_ASPECT_RATIO)
-        if ((raw_key != -1) or (prop_val < 0.0)):
-            # the user hit a key or closed the window (in that order)
-            break
+    fps.update()
+    
 
 
 # This function is called from the entry point to do
 # all the work.
 def main():
-    print('Running NCS Caffe TinyYolo example')
+    print('Running NCS Caffe TinyYolo ')
 
     # Set logging level and initialize/open the first NCS we find
     mvnc.SetGlobalOption(mvnc.GlobalOption.LOG_LEVEL, 0)
@@ -274,29 +268,39 @@ def main():
     # Read image from file, resize it to network width and height
     # save a copy in display_image for display, then convert to float32, normalize (divide by 255),
     # and finally convert to convert to float16 to pass to LoadTensor as input for an inference
-    input_image = cv2.imread(input_image_file)
-    display_image = input_image
-    input_image = cv2.resize(input_image, (NETWORK_IMAGE_WIDTH, NETWORK_IMAGE_HEIGHT), cv2.INTER_LINEAR)
-    input_image = input_image.astype(np.float32)
-    input_image = np.divide(input_image, 255.0)
-    input_image = input_image[:, :, ::-1]  # convert to RGB
+    
+    # new 
+    vs = VideoStream(usePiCamera=False).start()
+    time.sleep(1)
+    fps = FPS().start()
+    while True:
+      try: 
+        frame = vs.read()
+        input_image = frame.copy()
+        display_image = input_image
+        input_image = cv2.resize(input_image, (NETWORK_IMAGE_WIDTH, NETWORK_IMAGE_HEIGHT), cv2.INTER_LINEAR)
+        input_image = input_image.astype(np.float32)
+        input_image = np.divide(input_image, 255.0)
+        input_image = input_image[:, :, ::-1]  # convert to RGB
+        # Load tensor and get result.  This executes the inference on the NCS
+        graph.LoadTensor(input_image.astype(np.float16), 'user object')
+        output, userobj = graph.GetResult()
+        # filter out all the objects/boxes that don't meet thresholds
+        filtered_objs = filter_objects(output.astype(np.float32), input_image.shape[1], input_image.shape[0]) 
+        display_objects_in_gui(display_image, filtered_objs)
 
-    # Load tensor and get result.  This executes the inference on the NCS
-    graph.LoadTensor(input_image.astype(np.float16), 'user object')
-    output, userobj = graph.GetResult()
-
-    # filter out all the objects/boxes that don't meet thresholds
-    filtered_objs = filter_objects(output.astype(np.float32), input_image.shape[1], input_image.shape[0]) # fc27 instead of fc12 for yolo_small
-
-    print('Displaying image with objects detected in GUI')
-    print('Click in the GUI window and hit any key to exit')
-    #display the filtered objects/boxes in a GUI window
-    display_objects_in_gui(display_image, filtered_objs)
-
+      except KeyboardInterrupt:
+        break 
+      except AttributeError:
+        break
+    fps.stop()
+    # eon
     #Clean up
     graph.DeallocateGraph()
     device.CloseDevice()
-    print('Finished')
+    print("[INFO] elapsed time: {:.2f}".format(fps.elapsed()))
+    print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
+
 
 
 # main entry point for program. we'll call main() to do what needs to be done.
