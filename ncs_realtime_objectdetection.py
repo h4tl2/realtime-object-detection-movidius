@@ -12,7 +12,6 @@ import time
 import cv2
 
 # initialize the list of class labels our network was trained to
-# detect, then generate a set of bounding box colors for each class
 CLASSES = ("background", "aeroplane", "bicycle", "bird",
 	"boat", "bottle", "bus", "car", "cat", "chair", "cow",
 	"diningtable", "dog", "horse", "motorbike", "person",
