@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+wget -nv --no-check-certificate 'https://docs.google.com/uc?export=download&id=13w95sG3pLUMgz5LR9_I9ztiw2JYcOFs4' -O video.mp4
