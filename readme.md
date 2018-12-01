@@ -1,4 +1,12 @@
 ## Real-time Object Detection on Movidius  
+### Run Camerastream  
+```
+python ncs_realtime_objectdetection.py --graph [path to graph] --display 1
+```  
+### Run Videostream
+```
+python ncs_video_objectdetection.py --graph [path to graph] --display 1 --video [path to video]
+```
 ### Flow  
 1.Export your model's graphdef (you can use tf.train.write_graph to export the graphdef from within your tf session)  
 2.Freeze your graphdef using freeze_graph.py (you'll need the checkpoint files)  

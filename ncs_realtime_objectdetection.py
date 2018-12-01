@@ -1,6 +1,6 @@
 # USAGE
-# python ncs_realtime_objectdetection.py --graph graphs/mobilenetgraph --display 1
-# python ncs_realtime_objectdetection.py --graph graphs/mobilenetgraph --confidence 0.5 --display 1
+# python ncs_realtime_objectdetection.py --graph [path to graph] --display 1
+# python ncs_realtime_objectdetection.py --graph [path to graph] --confidence 0.5 --display 1
 
 # import the necessary packages
 from mvnc import mvncapi as mvnc
@@ -47,8 +47,6 @@ def predict(image, graph):
 	# grab the number of valid object predictions from the output,
 	# then initialize the list of predictions
 	num_valid_boxes = output[0]
-	print(output)
-	print(_)
 	predictions = []
 
 	# loop over results
