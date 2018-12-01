@@ -1,5 +1,3 @@
-#! /usr/bin/env python3
-
 # Copyright(c) 2017 Intel Corporation. 
 # License: MIT See LICENSE file in root directory.
 

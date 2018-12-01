@@ -49,41 +49,41 @@ def predict(image, graph):
 	num_valid_boxes = output[0]
 	predictions = []
 
-	# loop over results
-	for box_index in range(num_valid_boxes):
-		# calculate the base index into our array so we can extract
-		# bounding box information
-		base_index = 7 + box_index * 7
+	# # loop over results
+	# for box_index in range(num_valid_boxes):
+	# 	# calculate the base index into our array so we can extract
+	# 	# bounding box information
+	# 	base_index = 7 + box_index * 7
 
-		# boxes with non-finite (inf, nan, etc) numbers must be ignored
-		if (not np.isfinite(output[base_index]) or
-			not np.isfinite(output[base_index + 1]) or
-			not np.isfinite(output[base_index + 2]) or
-			not np.isfinite(output[base_index + 3]) or
-			not np.isfinite(output[base_index + 4]) or
-			not np.isfinite(output[base_index + 5]) or
-			not np.isfinite(output[base_index + 6])):
-			continue
+	# 	# boxes with non-finite (inf, nan, etc) numbers must be ignored
+	# 	if (not np.isfinite(output[base_index]) or
+	# 		not np.isfinite(output[base_index + 1]) or
+	# 		not np.isfinite(output[base_index + 2]) or
+	# 		not np.isfinite(output[base_index + 3]) or
+	# 		not np.isfinite(output[base_index + 4]) or
+	# 		not np.isfinite(output[base_index + 5]) or
+	# 		not np.isfinite(output[base_index + 6])):
+	# 		continue
 
-		# extract the image width and height and clip the boxes to the
-		# image size in case network returns boxes outside of the image
-		# boundaries
-		(h, w) = image.shape[:2]
-		x1 = max(0, int(output[base_index + 3] * w))
-		y1 = max(0, int(output[base_index + 4] * h))
-		x2 = min(w,	int(output[base_index + 5] * w))
-		y2 = min(h,	int(output[base_index + 6] * h))
+	# 	# extract the image width and height and clip the boxes to the
+	# 	# image size in case network returns boxes outside of the image
+	# 	# boundaries
+	# 	(h, w) = image.shape[:2]
+	# 	x1 = max(0, int(output[base_index + 3] * w))
+	# 	y1 = max(0, int(output[base_index + 4] * h))
+	# 	x2 = min(w,	int(output[base_index + 5] * w))
+	# 	y2 = min(h,	int(output[base_index + 6] * h))
 
-		# grab the prediction class label, confidence (i.e., probability),
-		# and bounding box (x, y)-coordinates
-		pred_class = int(output[base_index + 1])
-		pred_conf = output[base_index + 2]
-		pred_boxpts = ((x1, y1), (x2, y2))
+	# 	# grab the prediction class label, confidence (i.e., probability),
+	# 	# and bounding box (x, y)-coordinates
+	# 	pred_class = int(output[base_index + 1])
+	# 	pred_conf = output[base_index + 2]
+	# 	pred_boxpts = ((x1, y1), (x2, y2))
 
-		# create prediciton tuple and append the prediction to the
-		# predictions list
-		prediction = (pred_class, pred_conf, pred_boxpts)
-		predictions.append(prediction)
+	# 	# create prediciton tuple and append the prediction to the
+	# 	# predictions list
+	# 	prediction = (pred_class, pred_conf, pred_boxpts)
+	# 	predictions.append(prediction)
 
 	# return the list of predictions to the calling function
 	return predictions
