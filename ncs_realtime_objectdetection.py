@@ -47,6 +47,7 @@ def predict(image, graph):
 	# grab the number of valid object predictions from the output,
 	# then initialize the list of predictions
 	num_valid_boxes = output[0]
+	print(output)
 	predictions = []
 
 	# # loop over results
